@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
+﻿
 namespace BookStoreAPIs.Models
 {
     public class ApplicationUser : IdentityUser
