@@ -8,5 +8,6 @@
         public DateTime Created { get; set; }
         public decimal Price { get; set; }
         public double Discount { get; set; }
+        public string BookImage { get; set; } = string.Empty;
     }
 }
