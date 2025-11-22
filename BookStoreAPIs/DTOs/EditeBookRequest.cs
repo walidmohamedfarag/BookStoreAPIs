@@ -1,0 +1,14 @@
+﻿namespace BookStoreAPIs.DTOs
+{
+    public class EditeBookRequest
+    {
+        public string Title { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public DateTime Created { get; set; } 
+        public decimal Price { get; set; }
+        public double Discount { get; set; }
+        public string CategoryName { get; set; } = string.Empty;
+        public IFormFile? BookImage { get; set; }
+
+    }
+}
