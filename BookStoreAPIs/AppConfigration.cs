@@ -1,5 +1,4 @@
-﻿using BookStoreAPIs.DataAccess;
-
+﻿
 namespace BookStoreAPIs
 {
     public static class AppConfigration
@@ -10,6 +9,7 @@ namespace BookStoreAPIs
             {
                 option.UseSqlServer(connection);
             });
+            services.AddScoped<IReposatory<Book> , Reposatory<Book>>();
         }
     }
 }
