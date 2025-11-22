@@ -10,6 +10,10 @@ namespace BookStoreAPIs
             // Add services to the container.
 
             builder.Services.AddControllers();
+            // check in app settings json file connection string name DefaultConnection is exists (get connection string) or not (return exception)
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            // call configure method from AppConfigration class to configure database connection
+            builder.Services.Configure(connectionString);
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
