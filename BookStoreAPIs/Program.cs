@@ -1,4 +1,6 @@
 
+using Scalar.AspNetCore;
+
 namespace BookStoreAPIs
 {
     public class Program
@@ -18,11 +20,12 @@ namespace BookStoreAPIs
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
-
+            app.UseStaticFiles();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                app.MapScalarApiReference();
             }
 
             app.UseHttpsRedirection();

@@ -10,6 +10,8 @@ namespace BookStoreAPIs
                 option.UseSqlServer(connection);
             });
             services.AddScoped<IReposatory<Book> , Reposatory<Book>>();
+            services.AddScoped<IReposatory<Author> , Reposatory<Author>>();
+            services.AddScoped<IReposatory<Category> , Reposatory<Category>>();
         }
     }
 }

@@ -4,6 +4,7 @@ using BookStoreAPIs.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookStoreAPIs.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251122175654_addrelationincategoryandbook")]
+    partial class addrelationincategoryandbook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -117,12 +120,17 @@ namespace BookStoreAPIs.DataAccess.Migrations
                     b.Property<DateOnly>("BirthDate")
                         .HasColumnType("date");
 
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BookId");
 
                     b.ToTable("Authors");
                 });
@@ -134,9 +142,6 @@ namespace BookStoreAPIs.DataAccess.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthorId")
-                        .HasColumnType("int");
 
                     b.Property<string>("BookImage")
                         .HasColumnType("nvarchar(max)");
@@ -163,8 +168,6 @@ namespace BookStoreAPIs.DataAccess.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
 
                     b.HasIndex("CategoryId");
 
@@ -322,21 +325,24 @@ namespace BookStoreAPIs.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BookStoreAPIs.Models.Book", b =>
+            modelBuilder.Entity("BookStoreAPIs.Models.Author", b =>
                 {
-                    b.HasOne("BookStoreAPIs.Models.Author", "Author")
+                    b.HasOne("BookStoreAPIs.Models.Book", "Book")
                         .WithMany()
-                        .HasForeignKey("AuthorId")
+                        .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Book");
+                });
+
+            modelBuilder.Entity("BookStoreAPIs.Models.Book", b =>
+                {
                     b.HasOne("BookStoreAPIs.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Author");
 
                     b.Navigation("Category");
                 });
