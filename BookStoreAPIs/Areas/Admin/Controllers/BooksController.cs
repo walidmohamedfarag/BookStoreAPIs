@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookStoreAPIs.Areas.Admin.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[area]/[controller]")]
     [ApiController]
+    [Area("Admin")]
     public class BooksController : ControllerBase
     {
+
     }
 }
