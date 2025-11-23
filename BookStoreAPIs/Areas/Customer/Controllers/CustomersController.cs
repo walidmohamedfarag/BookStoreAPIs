@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
 
-namespace BookStoreAPIs.Areas.Customer
+namespace BookStoreAPIs.Areas.Customer.Controllers
 {
     [Route("api/[area]/[controller]")]
     [ApiController]
