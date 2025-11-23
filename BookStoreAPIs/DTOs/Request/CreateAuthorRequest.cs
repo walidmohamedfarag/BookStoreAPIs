@@ -1,4 +1,4 @@
-﻿namespace BookStoreAPIs.DTOs
+﻿namespace BookStoreAPIs.DTOs.Request
 {
     public class CreateAuthorRequest
     {

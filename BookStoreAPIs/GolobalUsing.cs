@@ -4,7 +4,7 @@ global using Microsoft.AspNetCore.Identity;
 global using Microsoft.EntityFrameworkCore;
 global using BookStoreAPIs.DataAccess;
 global using BookStoreAPIs.Reposatories;
-global using BookStoreAPIs.DTOs;
+global using BookStoreAPIs.DTOs.Request;
 global using Microsoft.AspNetCore.Mvc;
 global using BookStoreAPIs.DataAccess.EntityTypeConfigration;
 
