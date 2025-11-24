@@ -3,6 +3,6 @@
     public class CategoryResponse
     {
         public string CategoryName { get; set; } = string.Empty;
-        public List<CategoryDTOs> Books { get; set; } = new List<CategoryDTOs>();
+        public List<BookDTOs> Books { get; set; } = new List<BookDTOs>();
     }
 }
