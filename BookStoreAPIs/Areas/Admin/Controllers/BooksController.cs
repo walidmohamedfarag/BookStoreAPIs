@@ -1,8 +1,8 @@
-﻿
-using BookStoreAPIs.DTOs.Request;
+﻿using BookStoreAPIs.DTOs.Request;
 using BookStoreAPIs.DTOs.Response;
 using Mapster;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace BookStoreAPIs.Areas.Admin.Controllers
@@ -24,87 +24,82 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateBookRequest createBook, CreateAuthorRequest createAuthor)
+        public async Task<IActionResult> Create([FromForm] CreateBookFullRequest bookFullRequest)
         {
 
 
-            #region create book
-            //create image of book
-            var book = createBook.Adapt<Book>();
-            // transfer book to dto to add it to author books collection and category books collection
-            var bookToAuthor_Category = book.Adapt<BookResponseDTOs>();
-            if (createBook.BookImage is not null && createBook.BookImage.Length > 0)
-            {
-                var imgMame = Guid.NewGuid().ToString() + Path.GetExtension(createBook.BookImage.FileName);
-                var imgPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Imagebook", imgMame);
-                using (var stream = System.IO.File.Create(imgPath))
-                {
-                    await createBook.BookImage.CopyToAsync(stream);
-                }
-                book.BookImage = imgMame;
-            }
-            #region create author
-            var author = createAuthor.Adapt<Author>();
+
             // check if author is exsit in db or not
-            var authorInDb = await authorRepo.GetOneAsync(a => a.Name.ToLower() == author.Name.ToLower());
+            Author author;
+            var authorInDb = await authorRepo.GetOneAsync(a => a.Name.ToLower() == bookFullRequest.CreateAuthor.Name.ToLower());
             // if exist assign its id to book author id 
             if (authorInDb is not null)
-            {
-                book.AuthorId = authorInDb.Id;
-                authorInDb.Books!.Add(bookToAuthor_Category);
-                await bookRepo.CommitAsync();
-            }
+                author = authorInDb;
             else
             {
-                // else create new author and assign its id to book author id
-                if (createAuthor.Image is not null && createAuthor.Image.Length > 0)
+                string authorImageName = string.Empty;
+
+                if (bookFullRequest.CreateAuthor.Image is not null && bookFullRequest.CreateAuthor.Image.Length > 0)
                 {
-                    var authorImageName = Guid.NewGuid().ToString() + Path.GetExtension(createAuthor.Image.FileName);
+                    authorImageName = Guid.NewGuid().ToString() + Path.GetExtension(bookFullRequest.CreateAuthor.Image.FileName);
                     var authorImagePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\AuthorImage", authorImageName);
                     using (var stream = System.IO.File.Create(authorImagePath))
                     {
-                        createAuthor.Image.CopyTo(stream);
+                        bookFullRequest.CreateAuthor.Image.CopyTo(stream);
                     }
-                    author.AuthorImage = authorImageName;
                 }
-                author.Age = DateTime.Now.Year - createAuthor.BirthDate.Year;
-                // trim unnecessary space
-                author.Name = author.Name.TrimMoreThanOneSpace();
-                author.Books!.Add(bookToAuthor_Category);
-                // add category to db
-                await authorRepo.AddAsync(author);
-                await authorRepo.CommitAsync();
-                book.AuthorId = author.Id;
+                author = new Author()
+                {
+                    Name = bookFullRequest.CreateAuthor.Name.TrimMoreThanOneSpace(),
+                    BirthDate = bookFullRequest.CreateAuthor.BirthDate,
+                    Age = DateTime.Now.Year - bookFullRequest.CreateAuthor.BirthDate.Year,
+                    AuthorImage = authorImageName
+                };
             }
-            #endregion
-            #region create category
+
+
             // check if category is exist in db or not 
-            var categoryInDb = await categoryRepo.GetOneAsync(c => c.CategoryName.ToLower() == createBook.CategoryName.ToLower());
+            Category category;
+            var categoryInDb = await categoryRepo.GetOneAsync(c => c.CategoryName.ToLower() == bookFullRequest.CreateBook.CategoryName.ToLower());
             // if exist assign its id to book category id
             if (categoryInDb is not null)
-            {
-                book.CategoryId = categoryInDb.Id;
-                categoryInDb.Books!.Add(bookToAuthor_Category);
-                await categoryRepo.CommitAsync();
-            }
+                category = categoryInDb;
             else
             {
-
                 // else create new category and assign its id to book category id
-                var category = new Category()
+                category = new Category()
                 {
-                    CategoryName = createBook.CategoryName.Trim()
+                    CategoryName = bookFullRequest.CreateBook.CategoryName.Trim()
                 };
-                // add category to db
-                category.Books!.Add(bookToAuthor_Category);
-                await categoryRepo.AddAsync(category);
-                await categoryRepo.CommitAsync();
-                book.CategoryId = category.Id;
             }
-            #endregion
+
+            // save book image to wwwroot folder 
+            Book book;
+            string imgMame = string.Empty;
+            if (bookFullRequest.CreateBook.BookImage is not null && bookFullRequest.CreateBook.BookImage.Length > 0)
+            {
+                imgMame = Guid.NewGuid().ToString() + Path.GetExtension(bookFullRequest.CreateBook.BookImage.FileName);
+                var imgPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Imagebook", imgMame);
+                using (var stream = System.IO.File.Create(imgPath))
+                {
+                    await bookFullRequest.CreateBook.BookImage.CopyToAsync(stream);
+                }
+            }
+            book = new Book()
+            {
+                Title = bookFullRequest.CreateBook.Title,
+                Description = bookFullRequest.CreateBook.Description,
+                Created = bookFullRequest.CreateBook.Created,
+                Price = bookFullRequest.CreateBook.Price,
+                Discount = bookFullRequest.CreateBook.Discount,
+                BookImage = imgMame,
+                Author = author,
+                Category = category,
+            };
+            author.Books.Add(book);
+            category.Books.Add(book);
             await bookRepo.AddAsync(book);
             await bookRepo.CommitAsync();
-            #endregion
 
             return Ok(new
             {
@@ -114,15 +109,17 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var books = await bookRepo.GetAllAsync(includes: [a => a.Author, c => c.Category]);
+            var booksInDB = await bookRepo.GetAllAsync();
+            var books = booksInDB.Adapt<List<BookResponseDTOs>>();
             return Ok(books);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOne(int id)
         {
-            var book = await bookRepo.GetOneAsync(b => b.Id == id, includes: [a => a.Author, c => c.Category]);
-            if (book is null)
+            var bookInDB = await bookRepo.GetOneAsync(b => b.Id == id);
+            if (bookInDB is null)
                 return NotFound();
+            var book = bookInDB.Adapt<List<BookResponseDTOs>>();
             return Ok(book);
         }
         [HttpPut("{id}")]

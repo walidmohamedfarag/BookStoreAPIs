@@ -10,6 +10,6 @@ namespace BookStoreAPIs.Models
         public DateOnly BirthDate { get; set; }
         public int Age { get; set; }
         public string AuthorImage { get; set; } = string.Empty;
-        public List<BookResponseDTOs>? Books { get; set; }
+        public List<Book> Books { get; set; } = new();
     }
 }
