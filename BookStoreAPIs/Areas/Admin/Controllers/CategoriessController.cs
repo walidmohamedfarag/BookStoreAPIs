@@ -18,11 +18,20 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categoriesInDB = await categoryRepo.GetAllAsync(includes: [c=>c.Books]);
-            if(categoriesInDB is null)
+            var categoriesInDB = await categoryRepo.GetAllAsync(includes: [c => c.Books]);
+            if (categoriesInDB is null)
                 return NotFound();
             var categories = categoriesInDB.Adapt<List<CategoryResponse>>();
             return Ok(categories);
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            var categoryInDB = await categoryRepo.GetOneAsync(c => c.Id == id, includes: [c => c.Books]);
+            if (categoryInDB is null)
+                return NotFound();
+            var category = categoryInDB.Adapt<CategoryResponse>();
+            return Ok(category);
         }
     }
 }
