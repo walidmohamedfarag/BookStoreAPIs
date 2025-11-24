@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+﻿using BookStoreAPIs.DTOs.Response;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 
 namespace BookStoreAPIs.Models
 {
@@ -9,6 +10,6 @@ namespace BookStoreAPIs.Models
         public DateOnly BirthDate { get; set; }
         public int Age { get; set; }
         public string AuthorImage { get; set; } = string.Empty;
-        public List<Book>? Books { get; set; }
+        public List<BookResponseDTOs>? Books { get; set; }
     }
 }

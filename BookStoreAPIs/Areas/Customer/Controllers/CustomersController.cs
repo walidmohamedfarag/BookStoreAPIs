@@ -1,4 +1,6 @@
-﻿namespace BookStoreAPIs.Areas.Customer.Controllers
+﻿using System.Threading.Tasks;
+
+namespace BookStoreAPIs.Areas.Customer.Controllers
 {
     [Route("api/[area]/[controller]")]
     [ApiController]
@@ -7,13 +9,15 @@
     {
         private readonly IReposatory<Book> bookRepo;
         private readonly IReposatory<Category> categoryRepo;
+        private readonly IReposatory<Author> authorRepo;
 
-        public CustomersController(IReposatory<Book> _bookRepo , IReposatory<Category> _categoryRepo)
+        public CustomersController(IReposatory<Book> _bookRepo , IReposatory<Category> _categoryRepo , IReposatory<Author> _authorRepo)
         {
             bookRepo = _bookRepo;
             categoryRepo = _categoryRepo;
+            authorRepo = _authorRepo;
         }
-        [HttpGet("GetAllBook/{id}")]
+        [HttpGet("GetAllBook/{categoryId}")]
         public async Task<IActionResult> GetAllBook(int? categoryId , int page = 1)
         {
             var books = await bookRepo.GetAllAsync(includes: [a=>a.Author , c=>c.Category]);
@@ -31,11 +35,13 @@
                 TotalPages = totalPages
             });
         }
-        [HttpGet("GetAuthor/{id}")]
-        public IActionResult GetAuthor(int authorId)
+        [HttpGet("GetAuthor/{authorId}")]
+        public async Task<IActionResult> GetAuthor(int authorId)
         {
-
-            return Ok();
+            var author = await authorRepo.GetOneAsync(a => a.Id == authorId);
+            if (author is null)
+                return NotFound();
+            return Ok(author);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿
 using BookStoreAPIs.DTOs.Request;
+using BookStoreAPIs.DTOs.Response;
 using Mapster;
 using Microsoft.IdentityModel.Tokens;
 using System.Threading.Tasks;
@@ -30,6 +31,8 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             #region create book
             //create image of book
             var book = createBook.Adapt<Book>();
+            // transfer book to dto to add it to author books collection and category books collection
+            var bookToAuthor_Category = book.Adapt<BookResponseDTOs>();
             if (createBook.BookImage is not null && createBook.BookImage.Length > 0)
             {
                 var imgMame = Guid.NewGuid().ToString() + Path.GetExtension(createBook.BookImage.FileName);
@@ -46,7 +49,11 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var authorInDb = await authorRepo.GetOneAsync(a => a.Name.ToLower() == author.Name.ToLower());
             // if exist assign its id to book author id 
             if (authorInDb is not null)
+            {
                 book.AuthorId = authorInDb.Id;
+                authorInDb.Books!.Add(bookToAuthor_Category);
+                await bookRepo.CommitAsync();
+            }
             else
             {
                 // else create new author and assign its id to book author id
@@ -63,6 +70,7 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
                 author.Age = DateTime.Now.Year - createAuthor.BirthDate.Year;
                 // trim unnecessary space
                 author.Name = author.Name.TrimMoreThanOneSpace();
+                author.Books!.Add(bookToAuthor_Category);
                 // add category to db
                 await authorRepo.AddAsync(author);
                 await authorRepo.CommitAsync();
@@ -74,7 +82,11 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var categoryInDb = await categoryRepo.GetOneAsync(c => c.CategoryName.ToLower() == createBook.CategoryName.ToLower());
             // if exist assign its id to book category id
             if (categoryInDb is not null)
+            {
                 book.CategoryId = categoryInDb.Id;
+                categoryInDb.Books!.Add(bookToAuthor_Category);
+                await categoryRepo.CommitAsync();
+            }
             else
             {
 
@@ -84,6 +96,7 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
                     CategoryName = createBook.CategoryName.Trim()
                 };
                 // add category to db
+                category.Books!.Add(bookToAuthor_Category);
                 await categoryRepo.AddAsync(category);
                 await categoryRepo.CommitAsync();
                 book.CategoryId = category.Id;
