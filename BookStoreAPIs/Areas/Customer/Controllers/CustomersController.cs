@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.Threading.Tasks;
-
-namespace BookStoreAPIs.Areas.Customer.Controllers
+﻿namespace BookStoreAPIs.Areas.Customer.Controllers
 {
     [Route("api/[area]/[controller]")]
     [ApiController]
@@ -18,8 +13,8 @@ namespace BookStoreAPIs.Areas.Customer.Controllers
             bookRepo = _bookRepo;
             categoryRepo = _categoryRepo;
         }
-        [HttpGet]
-        public async Task<IActionResult> Get(int? categoryId , int page = 1)
+        [HttpGet("GetAllBook/{id}")]
+        public async Task<IActionResult> GetAllBook(int? categoryId , int page = 1)
         {
             var books = await bookRepo.GetAllAsync(includes: [a=>a.Author , c=>c.Category]);
             if (categoryId is not null)
@@ -35,6 +30,12 @@ namespace BookStoreAPIs.Areas.Customer.Controllers
                 CurrentPage = currentPage,
                 TotalPages = totalPages
             });
+        }
+        [HttpGet("GetAuthor/{id}")]
+        public IActionResult GetAuthor(int authorId)
+        {
+
+            return Ok();
         }
     }
 }

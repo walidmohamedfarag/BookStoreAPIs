@@ -124,7 +124,7 @@ namespace BookStoreAPIs.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("BookStoreAPIs.Models.Book", b =>
@@ -168,7 +168,7 @@ namespace BookStoreAPIs.DataAccess.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookStoreAPIs.Models.Category", b =>
@@ -186,7 +186,7 @@ namespace BookStoreAPIs.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
