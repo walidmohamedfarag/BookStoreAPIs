@@ -92,6 +92,7 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
                 Created = bookFullRequest.CreateBook.Created,
                 Price = bookFullRequest.CreateBook.Price,
                 Discount = bookFullRequest.CreateBook.Discount,
+                PriceAfterDiscount = bookFullRequest.CreateBook.Price - (bookFullRequest.CreateBook.Price * ((decimal)bookFullRequest.CreateBook.Discount / 100)),
                 BookImage = imgMame,
                 Author = author,
                 Category = category,
@@ -160,9 +161,15 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             if (editeBook.Created != default(DateTime))
                 bookInDB.Created = editeBook.Created;
             if (editeBook.Price != default(decimal))
+            {
                 bookInDB.Price = editeBook.Price;
+                bookInDB.PriceAfterDiscount = editeBook.Price - (editeBook.Price * ((decimal)editeBook.Discount / 100));
+            }
             if (editeBook.Discount != default(double))
+            {
                 bookInDB.Discount = editeBook.Discount;
+                bookInDB.PriceAfterDiscount = editeBook.Price - (editeBook.Price * ((decimal)editeBook.Discount / 100));
+            }
             await bookRepo.CommitAsync();
             return NoContent();
         }
