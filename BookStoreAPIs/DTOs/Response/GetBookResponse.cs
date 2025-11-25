@@ -2,9 +2,8 @@
 {
     public class GetBookResponse
     {
-        public IEnumerable<Book> Books { get; set; }
-        public IEnumerable<Category> Categories { get; set; }
+        public IEnumerable<BookResponse> Books { get; set; }
         public int CurrentPage { get; set; }
-        public int TotalPages { get; set; }
+        public double TotalPages { get; set; }
     }
 }

@@ -17,31 +17,22 @@ namespace BookStoreAPIs.Areas.Customer.Controllers
             categoryRepo = _categoryRepo;
             authorRepo = _authorRepo;
         }
-        [HttpGet("GetAllBook/{categoryId}")]
+        [HttpGet("GetAllBook")]
         public async Task<IActionResult> GetAllBook(int? categoryId , int page = 1)
         {
-            var books = await bookRepo.GetAllAsync(includes: [a=>a.Author , c=>c.Category]);
+            var booksInDB = await bookRepo.GetAllAsync(includes: [a=>a.Author , c=>c.Category]);
             if (categoryId is not null)
-                books = await bookRepo.GetAllAsync(c => c.CategoryId == categoryId, includes: [a => a.Author, c => c.Category]);
-            var categories = await categoryRepo.GetAllAsync();
+                booksInDB = await bookRepo.GetAllAsync(c => c.CategoryId == categoryId, includes: [a => a.Author, c => c.Category]);
             var currentPage = page;
-            var totalPages = Math.Ceiling((double)books.Count() / 4);
-            books = books.Skip(0).Take(4);
-            return Ok(new
+            var totalPages = Math.Ceiling((double)booksInDB.Count() / 4);
+            booksInDB = booksInDB.Skip(0).Take(4);
+            var books = booksInDB.Adapt<List<BookResponse>>();
+            return Ok(new GetBookResponse
             {
                 Books = books,
-                Categories = categories,
                 CurrentPage = currentPage,
                 TotalPages = totalPages
             });
-        }
-        [HttpGet("GetAuthor/{authorId}")]
-        public async Task<IActionResult> GetAuthor(int authorId)
-        {
-            var author = await authorRepo.GetOneAsync(a => a.Id == authorId);
-            if (author is null)
-                return NotFound();
-            return Ok(author);
         }
     }
 }
