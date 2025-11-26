@@ -33,5 +33,15 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var category = categoryInDB.Adapt<CategoryResponse>();
             return Ok(category);
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var category = await categoryRepo.GetOneAsync(c => c.Id == id, includes: [c => c.Books]);
+            if (category is null)
+                return NotFound();
+            categoryRepo.Delete(category);
+            await categoryRepo.CommitAsync();
+            return NoContent();
+        }
     }
 }
