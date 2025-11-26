@@ -1,4 +1,5 @@
 ﻿
+using BookStoreAPIs.Utility;
 using System.Text.RegularExpressions;
 
 namespace BookStoreAPIs
@@ -11,9 +12,17 @@ namespace BookStoreAPIs
             {
                 option.UseSqlServer(connection);
             });
+            services.AddIdentity<ApplicationUser, IdentityRole>(option =>
+            {
+                option.User.RequireUniqueEmail = true;
+                option.Password.RequireNonAlphanumeric = false;
+            }).AddEntityFrameworkStores<ApplicationDBContext>()
+            .AddDefaultTokenProviders();
+            services.AddTransient<IEmailSender, Emailsender>();
             services.AddScoped<IReposatory<Book>, Reposatory<Book>>();
             services.AddScoped<IReposatory<Author>, Reposatory<Author>>();
             services.AddScoped<IReposatory<Category>, Reposatory<Category>>();
+            services.AddScoped<IReposatory<OTPUser>, Reposatory<OTPUser>>();
         } 
         public static string TrimMoreThanOneSpace(this string word)
         {
