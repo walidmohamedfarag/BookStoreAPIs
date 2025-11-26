@@ -24,5 +24,24 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var authors = authorsInDB.Adapt<List<AuthorResponse>>();
             return Ok(authors);
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOne(int id)
+        {
+            var authorInDB = await authorReposatory.GetOneAsync(a=>a.Id == id , includes: [a=>a.Books]);
+            if (authorInDB is null)
+                return NotFound();
+            var author = authorInDB.Adapt<AuthorResponse>();
+            return Ok(author);
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var authorInDB = await authorReposatory.GetOneAsync(a => a.Id == id, includes: [a => a.Books]);
+            if(authorInDB is null)
+                return NotFound();
+            authorReposatory.Delete(authorInDB);
+            await authorReposatory.CommitAsync();
+            return NoContent();
+        }
     }
 }
