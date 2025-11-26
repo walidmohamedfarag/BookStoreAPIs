@@ -39,6 +39,10 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var authorInDB = await authorReposatory.GetOneAsync(a => a.Id == id, includes: [a => a.Books]);
             if(authorInDB is null)
                 return NotFound();
+            // delete author image from wwwroot folder
+            var pathImage = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\AuthorImage", authorInDB.AuthorImage);
+            if (System.IO.File.Exists(pathImage))
+                System.IO.File.Delete(pathImage);
             authorReposatory.Delete(authorInDB);
             await authorReposatory.CommitAsync();
             return NoContent();
