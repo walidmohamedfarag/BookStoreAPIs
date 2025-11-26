@@ -120,7 +120,7 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var bookInDB = await bookRepo.GetOneAsync(b => b.Id == id);
             if (bookInDB is null)
                 return NotFound();
-            var book = bookInDB.Adapt<List<BookResponseDTOs>>();
+            var book = bookInDB.Adapt<BookResponseDTOs>();
             return Ok(book);
         }
         [HttpPut("{id}")]
