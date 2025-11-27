@@ -11,6 +11,8 @@ global using BookStoreAPIs.DTOs.Response;
 global using Mapster;
 global using Microsoft.AspNetCore.Identity.UI.Services;
 global using System.ComponentModel.DataAnnotations;
+global using Microsoft.AspNetCore.Authorization;
+
 
 
 

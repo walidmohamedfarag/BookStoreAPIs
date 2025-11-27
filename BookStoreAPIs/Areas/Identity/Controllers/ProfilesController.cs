@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
+﻿
 namespace BookStoreAPIs.Areas.Identity.Controllers
 {
     [Route("api/[area]/[controller]")]
@@ -20,6 +16,7 @@ namespace BookStoreAPIs.Areas.Identity.Controllers
         }
 
         [HttpPost("UpdateProfile")]
+        [Authorize]
         public async Task<IActionResult> UpdateProfile(UpdateProfileRequest updateProfile)
         {
             var user = await userManager.GetUserAsync(User);
