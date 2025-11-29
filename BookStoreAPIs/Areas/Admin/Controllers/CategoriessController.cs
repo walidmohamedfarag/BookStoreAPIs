@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BookStoreAPIs.Utility.DBInitializer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
     [Route("api/[area]/[controller]")]
     [ApiController]
     [Area("Admin")]
+    [Authorize(Roles = $"{StaticRole.SuperAdmin} , {StaticRole.Admin}")]
     public class CategoriessController : ControllerBase
     {
         private readonly IReposatory<Category> categoryRepo;
@@ -24,7 +26,7 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var categories = categoriesInDB.Adapt<List<CategoryResponse>>();
             return Ok(categories);
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id}/GetOne")]
         public async Task<IActionResult> GetOne(int id)
         {
             var categoryInDB = await categoryRepo.GetOneAsync(c => c.Id == id, includes: [c => c.Books]);
@@ -33,7 +35,7 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
             var category = categoryInDB.Adapt<CategoryResponse>();
             return Ok(category);
         }
-        [HttpGet("{id}")]
+        [HttpGet("{id}/Delete")]
         public async Task<IActionResult> Delete(int id)
         {
             var category = await categoryRepo.GetOneAsync(c => c.Id == id, includes: [c => c.Books]);

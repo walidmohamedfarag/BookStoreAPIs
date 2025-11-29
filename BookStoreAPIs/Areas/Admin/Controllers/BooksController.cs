@@ -1,5 +1,6 @@
 ﻿using BookStoreAPIs.DTOs.Request;
 using BookStoreAPIs.DTOs.Response;
+using BookStoreAPIs.Utility.DBInitializer;
 using Mapster;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
@@ -10,6 +11,8 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
     [Route("api/[area]/[controller]")]
     [ApiController]
     [Area("Admin")]
+    [Authorize(Roles = $"{StaticRole.SuperAdmin} , {StaticRole.Admin}")]
+
     public class BooksController : ControllerBase
     {
         private readonly IReposatory<Book> bookRepo;

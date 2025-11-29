@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BookStoreAPIs.Areas.Identity.Controllers
 {
@@ -75,9 +79,29 @@ namespace BookStoreAPIs.Areas.Identity.Controllers
                 {
                     error = "Invalid password or email"
                 });
+            var userRoles = await userManager.GetRolesAsync(user);
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier , user.Id),
+                new Claim(ClaimTypes.Email , user.Email!),
+                new Claim(ClaimTypes.NameIdentifier , user.UserName!),
+                new Claim(ClaimTypes.Role , string.Join(", " , userRoles)),
+                new Claim(JwtRegisteredClaimNames.Jti , Guid.NewGuid().ToString()),
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ghkjjhkjkhjhjkjkjhjkhjhkkjkhjhnnmnmjkdsdsdsds"));
+            var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken
+                (
+                issuer: "https://localhost:7139",
+                audience: "https://localhost:7139",
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(30),
+                signingCredentials: credential
+                );
             return Ok(new
             {
-                success = "Login Successfully"
+                success = "Login Successfully",
+                token = new JwtSecurityTokenHandler().WriteToken(token)
             });
         }
         [HttpGet("ResendEmailconfirmation")]

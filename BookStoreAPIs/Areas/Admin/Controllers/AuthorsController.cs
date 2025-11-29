@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BookStoreAPIs.Utility.DBInitializer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -7,6 +8,8 @@ namespace BookStoreAPIs.Areas.Admin.Controllers
     [Route("api/[area]/[controller]")]
     [ApiController]
     [Area("Admin")]
+    [Authorize(Roles = $"{StaticRole.SuperAdmin} , {StaticRole.Admin}")]
+
     public class AuthorsController : ControllerBase
     {
         private readonly IReposatory<Author> authorReposatory;
