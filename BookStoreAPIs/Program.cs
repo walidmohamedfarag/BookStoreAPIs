@@ -1,4 +1,5 @@
 
+using BookStoreAPIs.Utility.DBInitializer;
 using Scalar.AspNetCore;
 
 namespace BookStoreAPIs
@@ -20,6 +21,8 @@ namespace BookStoreAPIs
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
+            var scope = app.Services.CreateScope();
+            var service = scope.ServiceProvider.GetService<IDBInitializer>();
             app.UseStaticFiles();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
