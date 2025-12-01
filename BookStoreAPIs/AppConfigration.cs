@@ -1,4 +1,5 @@
 ﻿
+using BookStoreAPIs.Services;
 using BookStoreAPIs.Utility;
 using BookStoreAPIs.Utility.DBInitializer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -29,6 +30,7 @@ namespace BookStoreAPIs
             services.AddScoped<IReposatory<Cart>, Reposatory<Cart>>();
             services.AddScoped<IDBInitializer, DBInitializer>();
             services.AddScoped<IReposatory<OTPUser>, Reposatory<OTPUser>>();
+            services.AddScoped<ITokenService, TokenService>();
             services.AddAuthentication(option =>
             {
                 option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
