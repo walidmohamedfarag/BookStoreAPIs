@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BookStoreAPIs.Areas.Identity.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[area]/[controller]")]
     [ApiController]
     [Area("Identity")]
     public class AccountsController : ControllerBase
